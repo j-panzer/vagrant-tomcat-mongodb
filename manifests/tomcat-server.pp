@@ -48,6 +48,43 @@ class requirements {
   }
 }
 
+class java7 {
+  include apt
+  apt::ppa { "ppa:webupd8team/java": }
+
+  exec { 'apt-get update':
+    command => '/usr/bin/apt-get update',
+    before => Apt::Ppa["ppa:webupd8team/java"],
+  }
+
+  exec { 'apt-get update 2':
+    command => '/usr/bin/apt-get update',
+    require => [ Apt::Ppa["ppa:webupd8team/java"]],
+  }
+ 
+  package { ["curl",
+             "bash"]:
+    ensure => present,
+    require => Exec["apt-get update"],
+    before => Apt::Ppa["ppa:webupd8team/java"],
+  }
+
+  package { ["oracle-java7-installer"]:
+    ensure => present,
+    require => Exec["apt-get update 2"],
+  }
+
+  exec {
+    "accept_license":
+    command => "echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections && echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections",
+    cwd => "/home/vagrant",
+    user => "vagrant",
+    path    => "/usr/bin/:/bin/",
+    before => Package["oracle-java7-installer"],
+    logoutput => true,
+  }
+}
+
 package { 'mongodb':
   ensure => present,
 }
@@ -70,11 +107,11 @@ class doinstall {
   }
 
   include projects
-  include java::jdk
+  include java7
   
   class { requirements: stage => 'pre' }
 
-  Class['java::jdk'] -> Class['projects']
+  Class['java7'] -> Class['projects']
 }
 
   # disable the firewall
