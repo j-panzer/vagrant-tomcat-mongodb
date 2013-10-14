@@ -3,6 +3,8 @@ node default {
 }
 
 class requirements {
+  include sysconfig
+  include sysconfig::sudoers
   include ssh::server
 
   group { "vagrant":
