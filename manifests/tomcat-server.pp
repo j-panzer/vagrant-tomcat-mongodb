@@ -106,12 +106,10 @@ class doinstall {
     ensure => installed
   }
 
-  include projects
+  include requirements
   include java7
   
   class { requirements: stage => 'pre' }
-
-  Class['java7'] -> Class['projects']
 }
 
   # disable the firewall
