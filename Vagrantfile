@@ -7,7 +7,7 @@ Vagrant::Config.run do |config|
   config.vm.forward_port 8080, 6789
   config.vm.network :hostonly, "33.33.13.38" 
  
-#  config.vm.forward_port 27017, 27017 #mongodb
+  config.vm.forward_port 27017, 27017 #mongodb
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
